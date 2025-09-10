@@ -36,10 +36,41 @@ app.use(helmet()); // Security headers
 app.use(compression()); // Compress responses
 app.use(limiter); // Rate limiting
 app.use(morgan('combined')); // Logging
-app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
-  credentials: true
-}));
+// CORS configuration for cloud deployment
+const corsOptions = {
+  origin: function (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    const allowedOrigins = [
+      'http://localhost:3000', // Local development
+      'http://localhost:3001', // Local development alternative
+      process.env.CORS_ORIGIN, // Custom origin from environment
+      process.env.FRONTEND_URL, // Frontend URL from environment
+    ].filter(Boolean); // Remove undefined values
+    
+    // Check if origin is in allowed list
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      // For cloud deployment, you might want to be more permissive
+      // Uncomment the next line if you want to allow all origins in production
+      if (process.env.NODE_ENV === 'production') {
+        callback(null, true); // Allow all origins in production
+      } else {
+        // Or be more restrictive and log the blocked origin
+        console.log(`CORS blocked origin: ${origin}`);
+        callback(new Error('Not allowed by CORS'));
+      }
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  optionsSuccessStatus: 200 // Some legacy browsers choke on 204
+};
+
+app.use(cors(corsOptions));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
