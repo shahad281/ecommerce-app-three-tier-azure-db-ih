@@ -21,12 +21,12 @@ export const userRegistrationSchema = Joi.object({
   password: Joi.string().min(6).required(),
   firstName: Joi.string().min(2).max(50).required(),
   lastName: Joi.string().min(2).max(50).required(),
-  phone: Joi.string().optional(),
-  address: Joi.string().optional(),
-  city: Joi.string().optional(),
-  state: Joi.string().optional(),
-  zipCode: Joi.string().optional(),
-  country: Joi.string().optional()
+  phone: Joi.string().allow('').optional(),
+  address: Joi.string().allow('').optional(),
+  city: Joi.string().allow('').optional(),
+  state: Joi.string().allow('').optional(),
+  zipCode: Joi.string().allow('').optional(),
+  country: Joi.string().allow('').optional()
 });
 
 export const userLoginSchema = Joi.object({

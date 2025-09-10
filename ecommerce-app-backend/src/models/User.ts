@@ -55,7 +55,7 @@ export class UserModel {
     const query = `
       INSERT INTO Users (email, password, firstName, lastName, phone, address, city, state, zipCode, country, isAdmin, createdAt, updatedAt)
       OUTPUT INSERTED.*
-      VALUES (@email, @password, @firstName, @lastName, @phone, @address, @city, @state, @zipCode, @country, @isAdmin, GETDATE(), GETDATE())
+      VALUES (@param0, @param1, @param2, @param3, @param4, @param5, @param6, @param7, @param8, @param9, @param10, GETDATE(), GETDATE())
     `;
 
     const result = await this.db.executeQuery(query, [
@@ -76,13 +76,13 @@ export class UserModel {
   }
 
   async getUserByEmail(email: string): Promise<User | null> {
-    const query = 'SELECT * FROM Users WHERE email = @email';
+    const query = 'SELECT * FROM Users WHERE email = @param0';
     const result = await this.db.executeQuery(query, [email]);
     return result.recordset[0] || null;
   }
 
   async getUserById(id: number): Promise<User | null> {
-    const query = 'SELECT * FROM Users WHERE id = @id';
+    const query = 'SELECT * FROM Users WHERE id = @param0';
     const result = await this.db.executeQuery(query, [id]);
     return result.recordset[0] || null;
   }
